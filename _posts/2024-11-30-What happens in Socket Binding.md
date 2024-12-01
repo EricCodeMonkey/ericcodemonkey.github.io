@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "What happens under the hood when you create a Java ServerSocket and bind wildcard "0.0.0.0" in a dual-stack host"
+title: "What happens under the hood when you create a Java ServerSocket and bind wildcard 0.0.0.0 in a dual-stack host"
 data: 2024-11-30
 categories: Java
 ---
