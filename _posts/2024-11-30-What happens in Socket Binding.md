@@ -25,11 +25,12 @@ Firstly, let's check what happens when we create an InetSocketAddress with "0.0.
 
 It will try to resolve the hostname ("0.0.0.0" in our case): InetAddress.getByName(hostname).
 
-![InetAddressGetByName](../docs/assets/images/InetAddressGetByName.png)
+![InetAddressGetByName](../docs/assets/images/InetAddressGetByName.PNG)
 
 Let's find what does getAllByName do:
 
-`private static InetAddress[] getAllByName(String host, InetAddress reqAddr)
+```java
+ private static InetAddress[] getAllByName(String host, InetAddress reqAddr)
         throws UnknownHostException {
 
         if (host == null || host.isEmpty()) {
@@ -106,15 +107,19 @@ Let's find what does getAllByName do:
             throw invalidIPv6LiteralException(host, true);
         }
         return getAllByName0(host, reqAddr, true, true);
-    }`
+    }
+```
     
 Basically, it will resolve the hostname to an Inet4Address or Inet6Address, in our case, since the hostname we passed in is "0.0.0.0",  this method will return an Inet4Address object:
 
-        `ret[0] = new Inet4Address(null, addr)`
+```java
+        ret[0] = new Inet4Address(null, addr)
+```
 
 ![Inet4Address](../docs/assets/images/Inet4Address.png)
 
-`static class InetAddressHolder {
+```java
+static class InetAddressHolder {
         /**
          * Reserve the original application specified hostname.
          *
@@ -176,13 +181,15 @@ Basically, it will resolve the hostname to an Inet4Address or Inet6Address, in o
         int getFamily() {
             return family;
         }
-    }`
+    }
+```
 
 We can see that the InetAddressHolder's family is set to "IPv4," and the Inet4Address is returned.
 
 Go back to:
 
-`public InetSocketAddress(String hostname, int port) {
+```java
+public InetSocketAddress(String hostname, int port) {
         checkHost(hostname);
         InetAddress addr = null;
         String host = null;
@@ -192,13 +199,15 @@ Go back to:
             host = hostname;
         }
         holder = new InetSocketAddressHolder(host, addr, checkPort(port));
-    }`
+    }
+```
     
 Until now, we got an InetSocketAddress object, whose "addr" field is an Inet4Address.
 
 Let's continue getting into the bind method of ServerSocket:
 
-`/**
+```java
+/**
      *
      * Binds the {@code ServerSocket} to a specific address
      * (IP address and port number).
@@ -217,9 +226,11 @@ Let's continue getting into the bind method of ServerSocket:
      */
     public void bind(SocketAddress endpoint) throws IOException {
         bind(endpoint, 50);
-    }`
+    }
+```
 
-`public void bind(SocketAddress endpoint, int backlog) throws IOException {
+```java
+public void bind(SocketAddress endpoint, int backlog) throws IOException {
         if (isClosed())
             throw new SocketException("Socket is closed");
         if (isBound())
@@ -247,9 +258,10 @@ Let's continue getting into the bind method of ServerSocket:
             bound = false;
             throw e;
         }
-    }`
-
-`SocketImpl getImpl() throws SocketException {
+    }
+```
+```java
+SocketImpl getImpl() throws SocketException {
         if (!created)
             createImpl();
         return impl;
@@ -263,19 +275,23 @@ Let's continue getting into the bind method of ServerSocket:
         } catch (IOException e) {
             throw new SocketException(e.getMessage());
         }
-    }`
-`private void setImpl() {
+    }
+```
+```java
+private void setImpl() {
         SocketImplFactory factory = ServerSocket.factory;
         if (factory != null) {
             impl = factory.createSocketImpl();
         } else {
             impl = SocketImpl.createPlatformSocketImpl(true);
         }
-    }`
+    }
+```
 
 Since we haven't set the SocketImplFactory, we will go into SocketImpl.createPlatformSocketImpl(true):
 
-`public abstract class SocketImpl implements SocketOptions {
+```java
+public abstract class SocketImpl implements SocketOptions {
     private static final boolean USE_PLAINSOCKETIMPL = usePlainSocketImpl();
 
     private static boolean usePlainSocketImpl() {
@@ -295,11 +311,13 @@ Since we haven't set the SocketImplFactory, we will go into SocketImpl.createPla
         } else {
             return (S) new NioSocketImpl(server);
         }
-    }`
+    }
+```
 
 The comment in SocketImpl class is very important:
 
-`/**
+```java
+/**
  * The abstract class {@code SocketImpl} is a common superclass
  * of all classes that actually implement sockets. It is used to
  * create both client and server sockets.
@@ -322,12 +340,14 @@ The comment in SocketImpl class is very important:
  * removed in a future version.
  *
  * @since   1.0
- */`
+ */
+```
 
 Since we haven't set the property of "jdk.net.usePlainSocketImpl", the NioSocketImpl will be returned. That means Java will use NioSocketImpl by default! (The JDK version in my host is: JDK 17).
 
 And then let's check the bind method of NioSocketImpl:
-    `@Override
+```java
+    @Override
     protected void bind(InetAddress host, int port) throws IOException {
         synchronized (stateLock) {
             ensureOpen();
@@ -341,10 +361,13 @@ And then let's check the bind method of NioSocketImpl:
             address = host;
             localport = Net.localAddress(fd).getPort();
         }
-    }`
+    }
+```
 
 We can see that it will call Net.bind() method. Let's go into it:
-`public static void bind(FileDescriptor fd, InetAddress addr, int port)
+
+```java
+public static void bind(FileDescriptor fd, InetAddress addr, int port)
         throws IOException
     {
         bind(UNSPEC, fd, addr, port);
@@ -355,11 +378,13 @@ We can see that it will call Net.bind() method. Let's go into it:
         public String name() {
             return "UNSPEC";
         }
-    };`
+    };
+```
 
 UNSPEC means there's no specified  IP Family.
 
-`static void bind(ProtocolFamily family, FileDescriptor fd,
+```java
+static void bind(ProtocolFamily family, FileDescriptor fd,
                      InetAddress addr, int port) throws IOException
     {
         boolean preferIPv6 = isIPv6Available() &&
@@ -368,10 +393,13 @@ UNSPEC means there's no specified  IP Family.
             addr = IPAddressUtil.toScopedAddress(addr);
         }
         bind0(fd, preferIPv6, exclusiveBind, addr, port);
-    }`
+    }
+```
 
 In the above bind method, firstly,  we will check whether preferIPv6 by checking isIPv6Available method and whether the family is unequal to INET(INET stands for IPv4), in our case, the family is "UNSPEC". and the isIPv6Available method is actually will turn to a native method:
-`**
+
+```java
+     *
      * Tells whether dual-IPv4/IPv6 sockets should be used.
      */
     static boolean isIPv6Available() {
@@ -380,22 +408,30 @@ In the above bind method, firstly,  we will check whether preferIPv6 by checking
             checkedIPv6 = true;
         }
         return isIPv6Available;
-    }`
+    }
+```
 
- `private static native boolean isIPv6Available0();`
+ ```java
+   private static native boolean isIPv6Available0();
+ ```
 
 We will go into this native method later. For this moment, let's continue.
 
 In our case, since we are in a dual-stack host, the IPv6 is available, and the IP family here is not INET, so, preferIPv6 will be true! (this is very important, keep in mind)
 
 And finally, it will go to the native bind0 method:
-`private static native void bind0(FileDescriptor fd, boolean preferIPv6,
+
+```java
+private static native void bind0(FileDescriptor fd, boolean preferIPv6,
                                      boolean useExclBind, InetAddress addr,
-                                     int port)`
+                                     int port)
+```
+
 Then we need to find the source code of this native method. It is located in the JDK source code's [Net.c]([url](https://github.com/openjdk/jdk/blob/master/src/java.base/unix/native/libnio/ch/Net.c
 )) file, 
 
-`Java_sun_nio_ch_Net_bind0(JNIEnv *env, jclass clazz, jobject fdo, jboolean preferIPv6,
+```c
+Java_sun_nio_ch_Net_bind0(JNIEnv *env, jclass clazz, jobject fdo, jboolean preferIPv6,
                           jboolean useExclBind, jobject iao, int port)
 {
     SOCKETADDRESS sa;
@@ -411,13 +447,15 @@ Then we need to find the source code of this native method. It is located in the
     if (rv != 0) {
         handleSocketError(env, errno);
     }
-}`
+}
+```
 
 There's a very important method: NET_InetAddressToSockaddr.
 It is located at: [net_util_md.c]([url](https://github.com/openjdk/jdk/blob/master/src/java.base/unix/native/libnet/net_util_md.c))
 
 Let's get into it:
-`/**
+```c
+/**
  * See net_util.h for documentation
  */
 JNIEXPORT int JNICALL
@@ -485,38 +523,44 @@ NET_InetAddressToSockaddr(JNIEnv *env, jobject iaObj, int port,
         }
     }
     return 0;
-}` 
+}
+```
 
 Firstly, it will get the Family field from the Java InetAddress object!
-`int getInetAddress_family(JNIEnv *env, jobject iaObj) {
+
+```c
+int getInetAddress_family(JNIEnv *env, jobject iaObj) {
     int family;
     jobject holder = (*env)->GetObjectField(env, iaObj, ia_holderID);
     CHECK_NULL_THROW_NPE_RETURN(env, holder, "InetAddress holder is null", -1);
     family = (*env)->GetIntField(env, holder, iac_familyID);
     (*env)->DeleteLocalRef(env, holder);
     return family;
-}`
+}
+```
 
 The Java InetAddress object we got in the previous step,  its family field is "IPv4"!
 
 Then it will check whether IPv6 address is available by calling method ipv6_available():
 
-`JNIEXPORT jint JNICALL ipv6_available()
+```c
+JNIEXPORT jint JNICALL ipv6_available()
 {
     return IPv6_available;
-}`
-
-`/*
+}
+/*
      * Since we have initialized and loaded the socket library we will
      * check now whether we have IPv6 on this platform and if the
      * supporting socket APIs are available
      */
     IPv4_available = IPv4_supported();
-    IPv6_available = IPv6_supported() & (!preferIPv4Stack);`
+    IPv6_available = IPv6_supported() & (!preferIPv4Stack);
+```
 
 It will check the IPv6_Supported method and preferIPv4Stack environment property:
 
-`DEF_JNI_OnLoad(JavaVM *vm, void *reserved)
+```c
+DEF_JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     JNIEnv *env;
     jclass iCls;
@@ -533,11 +577,13 @@ It will check the IPv6_Supported method and preferIPv4Stack environment property
     CHECK_NULL_RETURN(mid, JNI_VERSION_1_2);
     s = (*env)->NewStringUTF(env, "java.net.preferIPv4Stack");
     CHECK_NULL_RETURN(s, JNI_VERSION_1_2);
-    preferIPv4Stack = (*env)->CallStaticBooleanMethod(env, iCls, mid, s);`
+    preferIPv4Stack = (*env)->CallStaticBooleanMethod(env, iCls, mid, s);
+```
 
 The IPv6_Supported method is very straightforward! It will try to create an IPv6 socket, if it fails, it means IPv6 is unsupported,  if it success, it means IPv6 is supported!!
 
-`jint  IPv6_supported()
+```c
+jint  IPv6_supported()
 {
     int fd;
     void *ipv6_fn;
@@ -586,13 +632,15 @@ The IPv6_Supported method is very straightforward! It will try to create an IPv6
         return JNI_TRUE;
     }
 }
-#endif /* DONT_ENABLE_IPV6 */`
+#endif /* DONT_ENABLE_IPV6 */
+```
 
-Let's go back to NET_InetAddressToSockaddr method.
+Let's go back to the NET_InetAddressToSockaddr method.
 
 This method is very important, actually, the answer to our question is in this method, I will add some comments to it:
 
-`NET_InetAddressToSockaddr(JNIEnv *env, jobject iaObj, int port,
+```c
+NET_InetAddressToSockaddr(JNIEnv *env, jobject iaObj, int port,
                           SOCKETADDRESS *sa, int *len,
                           jboolean v4MappedAddress)
 {
@@ -662,13 +710,14 @@ This method is very important, actually, the answer to our question is in this m
         }
     }
     return 0;
-}`
+}
+```
 
-In this method, if it is in a dual-stack environment where IPv6 is supported,  then IPv4 address will be mapped to IPv6, including the wildcard!  That's why we only bind "0.0.0.0", but IPv6's wildcard "::" also bonded! !!
+In this method, if it is in a dual-stack environment where IPv6 is supported,  then the IPv4 address will be mapped to IPv6, including the wildcard!  That's why we only bind "0.0.0.0", but IPv6's wildcard "::" also bonded! !!
 
-Finally, we get to the really bind method:
-
-`/*
+Finally, we get to the bind method:
+```c
+/*
  * Wrapper for bind system call - performs any necessary pre/post
  * processing to deal with OS specific issues :-
  *
@@ -697,7 +746,8 @@ NET_Bind(int fd, SOCKETADDRESS *sa, int len)
     rv = bind(fd, &sa->sa, len);
 
     return rv;
-}`
+}
+```
 
 It invokes the system call "bind" to complete the binding operation! 
 
