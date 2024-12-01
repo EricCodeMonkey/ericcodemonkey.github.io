@@ -436,7 +436,7 @@ From the above code, we can see that if IPv6 is avaiable and the `preferIPv6` is
 
 `fd = socket(domain, type, 0);`
 
-Here, the system call `socket` will be invoked, and the "real" socket get createdi, fianlly!
+Here, the system call `socket` will be invoked, and the "real" socket get createdi, finally!
 
 And there's a very important step:
 
