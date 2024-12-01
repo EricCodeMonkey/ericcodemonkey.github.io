@@ -21,7 +21,7 @@
 title: Eric's wonderland
 email: eric_cen@outlook.com
 description: >- # this means to ignore newlines until "baseurl:"
-  This is Eric's wonderland. I am a code monkey, a guitarist.
+  I, the code monkey, the guitarist!
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
