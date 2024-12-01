@@ -23,5 +23,5 @@ From now on, your /etc/resolv.conf will be persisted.
 Enjoy it.
 
 
-
-NOTES: chattr command is used to change the file or directory attributes. +i means "make the file immutable, it cannot be modified, delete, renamed, or linked"
+> [!NOTE]
+> chattr command is used to change the file or directory attributes. +i means "make the file immutable, it cannot be modified, delete, renamed, or linked"
