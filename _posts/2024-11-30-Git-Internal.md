@@ -26,12 +26,12 @@ In Git, the contents of files are stored as blobs. It is important to note that 
 
 That means that if you have two files anywhere in your project that are the same, even if they have different names, Git will only store the blob once. This also means that during repository transfers, such as clones or fetches, Git will only transfer the blob once, then expand it out into multiple files upon checkout.
 
-![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Blob.png)
+![Git-Blob](/ericcodemonkey.github.io/assets/Git-Blob.png)
 
 ### The Tree
-Directories in Git basically correspond to trees.
+Directories in Git correspond to trees.
 
-![Git-Tree1](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Tree1.png)
+![Git-Tree1](/ericcodemonkey.github.io/assets/images/Git-Tree1.png)
 
 A tree is a simple list of trees and blobs that the tree contains, along with the names and modes of those trees and blobs. The contents section of a tree object consists of a very simple text file that lists the mode, type, name, and SHA of each entry.
 ![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Tree2.png)
