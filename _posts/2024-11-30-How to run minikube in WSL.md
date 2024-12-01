@@ -18,7 +18,7 @@ Most steps work; however, there are many pitfalls you need to fix. Here are some
     
    Try to run the below command:
 
-       ```bash
+      
        sudo mv /var/lib/dpkg/info /var/lib/dpkg/info_silent
        sudo mkdir /var/lib/dpkg/info
        sudo apt-get update
@@ -28,7 +28,7 @@ Most steps work; however, there are many pitfalls you need to fix. Here are some
        sudo mv /var/lib/dpkg/info_silent /var/lib/dpkg/info
        sudo apt-get update
        sudo apt-get upgrade
-      ```
+    
 
    I don't know why it works, it just works. Big thanks to this tip from Stackoverflow, who saved my day:)
 
@@ -36,25 +36,25 @@ Most steps work; however, there are many pitfalls you need to fix. Here are some
 ## 2. Make sure you are running WSL in version 2.
     
    Run: 
-       ```bash
+       
        wsl  -l  -v
-       ```
+      
    
    Check the version in the output.
 
    If the version is not 2, run the below command in Windows Powershell:
-```bash
+
              wsl  --set-version  <your wsl image name in the output of "wsl -l -v">  2
-```
+
    If the above command failed due to the below error:
 
-            `Error code: Wsl/Service/CreateVm/HCS/HCS_E_SERVICE_NOT_AVAILABLE`
+            Error code: Wsl/Service/CreateVm/HCS/HCS_E_SERVICE_NOT_AVAILABLE
 
   Run below commands:
  
-          ```dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart```
+         dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 
-         ```dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart```
+         dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
  
   
 And then restart your machine.
@@ -70,6 +70,7 @@ After the DNS server configuration is corrected, you should start the minikube s
 ## 4. After the minikube is ready, if you encounter "Error: ImagePullBackoff" when deploying the pod via helm install, you may need to check the CoreDNS pods and config map.
 
 Firstly, check the CoreDNS pods:
+
       kubectl get  pods -n kube-system -l k8s-app=kube-dns
 
 The output should show Running status for CoreDNS pods:
@@ -78,15 +79,16 @@ NAME                        READY   STATUS    RESTARTS   AGE
 coredns-78fcd69978-xxxxx    1/1     Running   0          10m
 
 If CoreDNS is not running, troubleshoot by:
+
      a. Restarting the CoreDNS deployment:
  
-       ``` kubectl rollout restart deployment coredns -n kube-system```
+       kubectl rollout restart deployment coredns -n kube-system
 
      b. Checking CoreDNS logs
 
 And if the CoreDNS pod is OK, then you can check  the CoreDNS ConfigMap;
 
-    ```kubectl edit configmap coredns -n kube-system```
+    kubectl edit configmap coredns -n kube-system
  
 The output should be like this:
 ```yaml
