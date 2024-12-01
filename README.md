@@ -1,2 +1,2 @@
-# ericcen.github.io
+# ericcodemonkey.github.io
 I, the code monkey, the guitarist.
