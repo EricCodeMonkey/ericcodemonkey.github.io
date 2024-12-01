@@ -2,15 +2,15 @@ Today, I am busy helping a teammate to troubleshoot an issue in Kubernetes clust
 
 For example, in my WSL, it is a dual-stack:
 
-![WSL-DualStack](.docs/assets/images/WSL-DualStack.png)
+![WSL-DualStack](../docs/assets/images/WSL-DualStack.png)
 
 And then I run below Java program(just for testing):
 
-![Java-SocketProgram](.docs/assets/images/Java-SocketProgram.png)
+![Java-SocketProgram](../docs/assets/images/Java-SocketProgram.png)
 
 After I run it in my WSL, I use the netstat command to check the listening socket:
 
-![Netstate-Result](.docs/assets/images/netstate-result.png)
+![Netstate-Result](../docs/assets/images/netstate-result.png)
 
 Although I am binding the "0.0.0.0" which is an IPv4 wildcard,  there's a tcp6 LISTENING socket with ":::8888" which is an IPv6 wildcard!
 
@@ -20,11 +20,11 @@ Let's delve into it.
 
 Firstly, let's check what happens when we create an InetSocketAddress with "0.0.0.0":
 
-![InetSocketAddress1](.docs/assets/images/InetSocketAddress1.png)
+![InetSocketAddress1](../docs/assets/images/InetSocketAddress1.png)
 
 It will try to resolve the hostname ("0.0.0.0" in our case): InetAddress.getByName(hostname).
 
-![InetAddressGetByName](.docs/assets/images/InetAddressGetByName.png)
+![InetAddressGetByName](../docs/assets/images/InetAddressGetByName.png)
 
 Let's find what does getAllByName do:
 
@@ -106,10 +106,12 @@ Let's find what does getAllByName do:
         }
         return getAllByName0(host, reqAddr, true, true);
     }`
-Basically, it will resolve the hostname to an Inet4Address or Inet6Address, in our case, since the hostname we passed in is "0.0.0.0",  this method will return an Inet4Address object
+    
+Basically, it will resolve the hostname to an Inet4Address or Inet6Address, in our case, since the hostname we passed in is "0.0.0.0",  this method will return an Inet4Address object:
+
         `ret[0] = new Inet4Address(null, addr)`
 
-![Inet4Address](.docs/assets/images/Inet4Address.png)
+![Inet4Address](../docs/assets/images/Inet4Address.png)
 
 `static class InetAddressHolder {
         /**
@@ -178,6 +180,7 @@ Basically, it will resolve the hostname to an Inet4Address or Inet6Address, in o
 We can see that the InetAddressHolder's family is set to "IPv4," and the Inet4Address is returned.
 
 Go back to:
+
 `public InetSocketAddress(String hostname, int port) {
         checkHost(hostname);
         InetAddress addr = null;
@@ -295,7 +298,7 @@ Since we haven't set the SocketImplFactory, we will go into SocketImpl.createPla
 
 The comment in SocketImpl class is very important:
 
-`  /**
+`/**
  * The abstract class {@code SocketImpl} is a common superclass
  * of all classes that actually implement sockets. It is used to
  * create both client and server sockets.
