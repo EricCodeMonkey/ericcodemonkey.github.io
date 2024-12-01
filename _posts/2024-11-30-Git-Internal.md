@@ -1,8 +1,10 @@
 ---
 layout: post
-title: Git Internal
+title: "Git Internal"
+data: 2024-11-30
 categories: Git
 ---
+
 ## What is Git
 Git is a stupid content tracker. That is probably the best description of it- don't think of it in a 'like (insert favorite SCM system), but...' context, but more like a really interesting file system.
 
