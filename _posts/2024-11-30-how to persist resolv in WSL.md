@@ -24,6 +24,5 @@ Enjoy it.
 
 
 > [!NOTE]
-> 
 > chattr command is used to change the file or directory attributes. +i means "make the file immutable, it cannot be modified,
 > delete, renamed, or linked"
