@@ -1,6 +1,6 @@
 # How to persist /etc/resolv.conf in WSL
 
-Recently, I found that whenever I restart WSL, the changes I made in /etc/resolve. conf are lost, and I need to configure it again manually. Finally, I found a way to persist /etc/resolv.conf in WSL. Big thanks to this post.
+Recently, I found that whenever I restart WSL, the changes I made in /etc/resolve. conf are lost, and I need to configure it again manually. Finally, I found a way to persist /etc/resolv.conf in WSL. Big thanks to this [post](https://github.com/microsoft/WSL/issues/5420).
 
 Firstly, Remove the /etc/resolv.conf:     
 
