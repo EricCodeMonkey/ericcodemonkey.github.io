@@ -4,19 +4,19 @@ Recently, I found that whenever I restart WSL, the changes I made in /etc/resolv
 
 Firstly, Remove the /etc/resolv.conf:     
 
-            `sudo rm /etc/resolv.conf`
+            sudo rm /etc/resolv.conf
 
 And then, create a new /etc/resolv.conf:
 
-          ` sudo bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'`
+          sudo bash -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'
 
 And then, add an entry into /etc/wsl.conf
 
-      `sudo bash -c 'echo "generateResolvConf = false" >> /etc/wsl.conf'`
+      sudo bash -c 'echo "generateResolvConf = false" >> /etc/wsl.conf'
 
 Finally, 
 
-         ` sudo chattr +i /etc/resolv.conf`
+         sudo chattr +i /etc/resolv.conf
 
 From now on, your /etc/resolv.conf will be persisted.
 
