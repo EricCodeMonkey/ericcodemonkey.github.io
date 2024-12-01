@@ -26,32 +26,32 @@ In Git, the contents of files are stored as blobs. It is important to note that 
 
 That means that if you have two files anywhere in your project that are the same, even if they have different names, Git will only store the blob once. This also means that during repository transfers, such as clones or fetches, Git will only transfer the blob once, then expand it out into multiple files upon checkout.
 
-![Git-Blob](../docs/assets/images/Git-Blob.png)
+![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Blob.png)
 
 ### The Tree
 Directories in Git basically correspond to trees.
 
-![Git-Blob](../docs/assets/images/Git-Tree1.png)
+![Git-Tree1](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Tree1.png)
 
 A tree is a simple list of trees and blobs that the tree contains, along with the names and modes of those trees and blobs. The contents section of a tree object consists of a very simple text file that lists the mode, type, name, and SHA of each entry.
-![Git-Blob](../docs/assets/images/Git-Tree2.png)
+![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Tree2.png)
 
 
 
 ### The Commit
 So, now that we can store arbitrary trees of content in Git, where does the 'history' part of  'tree history storage system' come in? The answer is the commit object.
 
-![Git-Blob](../docs/assets/images/Git-Commit1.png)
+![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Commit1.png)
 
 
 
 The commit is very simple, much like the tree. It simply points to a tree and keeps an author, committer, message and any parent commits that directly preceded it.
 
-![Git-Blob](../docs/assets/images/Git-Commit2.png)
+![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Commit2.png)
 
 Since it was my first commit, there are no parents. If I commit a second time, the commit object will look more like this:
 
-![Git-Blob](../docs/assets/images/Git-Commit3.png)
+![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Commit3.png)
 
 
 
@@ -59,7 +59,7 @@ Since it was my first commit, there are no parents. If I commit a second time, t
 ### The Tag
 The final type of object you will find in a Git database is the tag. This is an object that provides a permanent shorthand name for a particular commit. It contains an object, type, tag, tagger, and a message. Normally the type is commit and the object is the SHA-1 of the commit you're tagging. The tag can also be GPG signed, providing cryptographic integrity to a release or version.
 
-![Git-Blob](../docs/assets/images/Git-Tag1.png)
+![Git-Blob](ericcodemonkey/ericcodemonkey.github.io/docs/assets/images/Git-Tag1.png)
 
 
 
