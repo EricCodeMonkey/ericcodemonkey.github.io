@@ -457,7 +457,7 @@ And there's a very important step:
     }
 ```
 
-This step will set the `IPV_V6ONLY` to false, so that this AF_INET6 socket can handle both IPv4 and IPv6 traffic simultuously, what we call is "Dual Stack Support"!.
+This step will set the `IPV_V6ONLY` to false, so that this AF_INET6 socket can handle both IPv4 and IPv6 traffic simultaneously, what we call is "Dual Stack Support"!.
 
 >[!NOTE]
 > IPV6_V6ONLY (since Linux 2.4.21 and 2.6)
