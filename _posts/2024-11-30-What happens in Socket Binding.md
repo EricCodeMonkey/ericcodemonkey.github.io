@@ -3,15 +3,15 @@ Today, I am busy helping a teammate to troubleshoot an issue in Kubernetes clust
 
 For example, in my WSL, it is a dual-stack:
 
-![WSL-DualStack](../docs/assets/images/WSL-DualStack.png)
+![WSL-DualStack](/docs/assets/WSL-DualStack.png)
 
 And then I run below Java program(just for testing):
 
-![Java-SocketProgram](../docs/assets/images/Java-SocketProgram.png)
+![Java-SocketProgram](/docs/assets/Java-SocketProgram.png)
 
 After I run it in my WSL, I use the netstat command to check the listening socket:
 
-![Netstate-Result](../docs/assets/images/netstate-result.png)
+![Netstate-Result](/docs/assets/netstate-result.png)
 
 Although I am binding the "0.0.0.0" which is an IPv4 wildcard,  there's a tcp6 LISTENING socket with ":::8888" which is an IPv6 wildcard!
 
@@ -21,11 +21,11 @@ Let's delve into it.
 
 Firstly, let's check what happens when we create an InetSocketAddress with "0.0.0.0":
 
-![InetSocketAddress1](../docs/assets/images/InetSocketAddress1.png)
+![InetSocketAddress1](/docs/assets/InetSocketAddress1.png)
 
 It will try to resolve the hostname ("0.0.0.0" in our case): InetAddress.getByName(hostname).
 
-![InetAddressGetByName](../docs/assets/images/InetAddressGetByName.PNG)
+![InetAddressGetByName](/docs/assets/InetAddressGetByName.PNG)
 
 Let's find what does getAllByName do:
 
@@ -116,7 +116,7 @@ Basically, it will resolve the hostname to an Inet4Address or Inet6Address, in o
         ret[0] = new Inet4Address(null, addr)
 ```
 
-![Inet4Address](../docs/assets/images/Inet4Address.png)
+![Inet4Address](/docs/assets/Inet4Address.png)
 
 ```java
 static class InetAddressHolder {
