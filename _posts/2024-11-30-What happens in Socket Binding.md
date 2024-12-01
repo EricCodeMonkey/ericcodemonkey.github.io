@@ -1,3 +1,10 @@
+---
+layout: post
+title: "What happens under the hood when you create a Java ServerSocket and bind wildcard "0.0.0.0" in a dual-stack host"
+data: 2024-11-30
+categories: Java, Networking
+---
+
 # What happens under the hood when you create a Java ServerSocket and bind wildcard "0.0.0.0" in a dual-stack host?
 Today, I am busy helping a teammate to troubleshoot an issue in Kubernetes cluster. In the investigation, I found it is related to a question that I have been dying to figure out for a long time: what happens under the hood when you create a Java ServerSocket and bind wildcard "0.0.0.0", and this time, it is in a dual-stack host.  
 
