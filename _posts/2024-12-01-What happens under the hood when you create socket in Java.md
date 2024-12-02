@@ -1,6 +1,6 @@
-In my last [post]([url](https://ericcodemonkey.github.io/2024/11/30/What-happens-in-Socket-Binding.html)) about the socket binding, I anaylized what happens under the hood when we binding the address to socekt. However, there's one detail missed which is what happens when we create a socket in Java. Today, let's delve into it.
+In my last [post]([url](https://ericcodemonkey.github.io/2024/11/30/What-happens-in-Socket-Binding.html)) about the socket binding, I analyzed what happens under the hood when we bind the address to socekt. However, there's one detail missed which is what happens when we create a socket in Java. Today, let's delve into it.
 
-As the same as last post, we use the below program(just for demo pupose):
+As per the same as last post, we use the below program(just for demo purposes):
 
 ```java
 
@@ -99,7 +99,7 @@ So in our case, `createPlatformSocketImpl` will return `new NioSocketImpl(server
 
 Until now, what we got is a Java object `ServerSocket`, with a `SocketImpl` field which is a `NioSocketImpl` object.
 
-Actually, we haven't touch the "real" Socket yet. Because, so far we haven't any native method called which will create the "real" socket.
+We haven't touched the "real" Socket yet. Because, so far we haven't any native method called which will create the "real" socket.
 
 Don't worry. Keep going.
 
@@ -186,7 +186,7 @@ Let's get into `ServerSocket.bind()` method:
         }
     }
 ```
-In above code, we focus on the below:
+In the above code, we focus on the below:
 
 `getImpl().bind(epoint.getAddress(), epoint.getPort());`
 
@@ -209,7 +209,7 @@ Let's get into `getImpl()` method:
     }
 ```
 
-As we know from previous step, there is no "real" socket created, so we will get into `createImpl()` method:
+As we know from the previous step, there is no "real" socket created, so we will get into `createImpl()` method:
 
 ```java
 
@@ -270,7 +270,7 @@ Since our `impl` is a `NioSocketImpl`, it is not null, so `NioSocketImpl's creat
 
 See, we are closing to the "real" socket!
 
-Let's continue. Since we are create a "Server" socket, we will get into `Net.serverSocket(true)`:
+Let's continue. Since we are creating a "Server" socket, we will get into `Net.serverSocket(true)`:
 
 ```java
 
@@ -284,7 +284,7 @@ static FileDescriptor serverSocket(ProtocolFamily family, boolean stream) {
     return IOUtil.newFD(socket0(preferIPv6, stream, true, fastLoopback));
 }
 ```
-Firstly, we will check whether IPv6 available and its ProtocolFamily(IPv4 or IPv6, or Unix Domain).
+Firstly, we will check whether IPv6 is available and its ProtocolFamily(IPv4 or IPv6, or Unix Domain).
 
 Check whether IPv6 available:
 
@@ -305,20 +305,20 @@ It will call a native method:
 
 `private static native boolean isIPv6Available0();`
 
-We have discussed this native method in [last post](https://ericcodemonkey.github.io/2024/11/30/What-happens-in-Socket-Binding.html). Acually, the implementation of this native method is very straightforward, it will try to create a IPv6 socket, if it fails, that means IPv6 is unsupported, if it sucesses, that means IPv6 is supported, that is it.
+We have discussed this native method in [last post](https://ericcodemonkey.github.io/2024/11/30/What-happens-in-Socket-Binding.html). Actually, the implementation of this native method is very straightforward, it will try to create an IPv6 socket, if it fails, that means IPv6 is unsupported, if it succeeds, that means IPv6 is supported, that is it.
 
-Since my machine is dualstack, so the IPv6 is available.
+Since my machine is dual-stack, so the IPv6 is available.
 
-Then it will check the ProtocolFamily, in the previous step, "UNSPEC" is passed, this gives the chance for kernel to dertermine. 
+Then it will check the ProtocolFamily, in the previous step, "UNSPEC" is passed, this gives the chance for the kernel to determine. 
 
 So in our case, the `preferIPv6` will be `true`.
 
-And then the native method which is responsible to create the "real" socket will be called:
+Then the native method which is responsible for creating the "real" socket will be called:
 
 `private static native int socket0(boolean preferIPv6, boolean stream, boolean reuse,
                                       boolean fastLoopback);`
 
-Please notes here the `preferIPv6` is true, and `stream` is true as well.
+Please note here the `preferIPv6` is true, and `stream` is true as well.
 
 And then let's get into the native method of `socket0` in [Net.c in JDK](https://github.com/openjdk/jdk/blob/master/src/java.base/unix/native/libnio/ch/Net.c): 
 
@@ -432,11 +432,11 @@ Let's analyze the implementation in this method:
  int domain = (ipv6_available() && preferIPv6) ? AF_INET6 : AF_INET;
 
 ```
-From the above code, we can see that if IPv6 is avaiable and the `preferIPv6` is true, then we will use `AF_INET6` as domain to create the socket.
+From the above code, we can see that if IPv6 is available and `preferIPv6` is true, then we will use `AF_INET6` as the domain to create the socket.
 
 `fd = socket(domain, type, 0);`
 
-Here, the system call `socket` will be invoked, and the "real" socket get createdi, finally!
+Here, the system call `socket` will be invoked, and the "real" socket will finally be created!
 
 And there's a very important step:
 
@@ -473,7 +473,7 @@ This step will set the `IPV_V6ONLY` to false, so that this AF_INET6 socket can h
 > of the file /proc/sys/net/ipv6/bindv6only.  The default
 > value for that file is 0 (false).
 
-I think the post makes the complete process of how to create a socket in Java very clearly.
+The post makes the complete process of how to create a socket in Java very clear.
 
 Hope you like it.
 
